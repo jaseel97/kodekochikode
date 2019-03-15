@@ -7,7 +7,6 @@ from keras.layers import LSTM, Dense
 from keras.models import Sequential
 from keras.preprocessing.sequence import TimeseriesGenerator
 from plotly.offline import plot
-# import plotly.io as pio
 
 import pandas as pd
 import tensorflow as tf
@@ -44,23 +43,6 @@ def get_volumes():
 
 data = get_volumes()
 
-yr_split = 4
-split = (yr_split*12)
-
-def gen_test_train(split):
-    train_data = {}
-    test_data = {}
-    for location in locations:
-        vol = data[location]
-        train = vol[:split]
-        test = vol[split:]
-        
-        train_data[location] = train
-        test_data[location] = test
-    return (train_data, test_data)
-
-train_data, test_data = gen_test_train(split)
-
 look_back = 3
 batch_size = 5
 
@@ -72,9 +54,7 @@ def create_generator(data_dict):
         generators[location] = gen
     return generators
 
-train_generator = create_generator(train_data)
-test_generator = create_generator(test_data)
-# print("Generator Created")
+train_generator = create_generator(data)
 
 # Neural Network
 
@@ -106,53 +86,39 @@ for i,location in enumerate(train_generator.keys()):
     print("Model for {}. \t\t\tTrained: {}/{}".format(location, i+1, len(train_generator.keys())))
 
 
-def prediction(test_generator, trained_models):
-    predictions = {}
-    for location in test_generator.keys():
-        model = trained_models[location]
-        generator = test_generator[location]
-        pred = model.predict_generator(generator)
-        predictions[location] = pred.reshape((-1))
-    return predictions
+# def prediction(test_generator, trained_models):
+#     predictions = {}
+#     for location in test_generator.keys():
+#         model = trained_models[location]
+#         generator = test_generator[location]
+#         pred = model.predict_generator(generator)
+#         predictions[location] = pred.reshape((-1))
+#     return predictions
 
-predictions = prediction(test_generator, trained_models)
+def predict(location, num_predictions):
+    model = trained_models[location]
+    prediction_values = data[location][-look_back:]
 
-test_location = locations[0]
-print(scaler.inverse_transform(test_data[test_location].reshape((-1,1))))
-print((scaler.inverse_transform(predictions[test_location].reshape((-1,1)))))
+    for _ in range(num_predictions):
+        x = prediction_values[-look_back:]
+        x = x.reshape((1, look_back, 1))
+        out = model.predict(x)[0][0]
+        print(out)
+        prediction_values = np.append(prediction_values, out)
 
-def plot_loc(loc, i):
-    train = train_data[loc]
-    test = test_data[loc]
-    predict = predictions[loc]
+    prediction_values = prediction_values[look_back:]
+    prediction_values = scaler.inverse_transform(prediction_values.reshape((-1,1)))
+    prediction_values = prediction_values.reshape(-1)
+    print(">>>",prediction_values)
 
-    trace1 = go.Scatter(
-        x = np.arange(len(train)),
-        y = train,
-        mode = 'lines',
-        name = 'Train'
-    )
-    trace2 = go.Scatter(
-        x = np.arange(len(train), len(train)+len(test)),
-        y = test,
-        mode = 'lines',
-        name = 'Test'
-    )
-    trace3 = go.Scatter(
-        x = np.arange(len(train), len(train)+len(test)),
-        y = predict,
-        mode = 'lines',
-        name = 'Prediction'
-    )
-    layout = go.Layout(
-        title=loc
-    )
-    fig = go.Figure(data=[trace1, trace2, trace3], layout=layout)
-    # pio.write_image(fig, file='Images/plot-{}'.format(i), format='png')
-    # filename = "image-1"
-    plot([trace1, trace2, trace3], image='jpeg', auto_open=False)
+    return prediction_values
 
-i=2
-plot_loc(locations[i], i)
-# for i, location in enumerate(locations):
-#     plot_loc(location, i)
+num_predictions = 6
+predictions = {}
+for location in locations:
+    predictions[location] = predict(location, num_predictions)
+    # print(">>>>>",data[location])
+
+# test_location = locations[0]
+# print(scaler.inverse_transform(test_data[test_location].reshape((-1,1))))
+# print((scaler.inverse_transform(predictions[test_location].reshape((-1,1)))))
