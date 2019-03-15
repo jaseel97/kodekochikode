@@ -1,9 +1,3 @@
-my_data <- read.table(file = "clipboard", 
-                      sep = "\t", header=TRUE)
-    
-
-
-
 my_data<-read.csv(file.choose(),header=TRUE)
 summary(my_data)
 View(my_data)
@@ -17,13 +11,17 @@ my_data$TOTAL.UNITS.= NULL
 my_data$APARTMENT.NUMBER.=NULL
 my_data$LAND.SQUARE.FEET.=NULL
 my_data$GROSS.SQUARE.FEET.=NULL
+my_data$X.SALE.PRICE..=NULL
 
 #(un)factorize necessary columns
 my_data$ZIP.CODE.<-as.factor(my_data$ZIP.CODE.)
 my_data$TAX.CLASS.AT.TIME.OF.SALE.<-as.factor(my_data$TAX.CLASS.AT.TIME.OF.SALE.)
 
+my_data$SALE.PRICE.<-gsub("$","",my_data$SALE.PRICE.,fixed=TRUE)
 my_data$SALE.PRICE.<-as.numeric(gsub(",","",my_data$SALE.PRICE.,fixed=TRUE))
-my_data$SALE.PRICE.<-as.numeric(as.character(my_data$SALE.PRICE.))
+
+my_data$X.SALE.PRICE.<-gsub("$","",my_data$X.SALE.PRICE.,fixed=TRUE)
+my_data$X.SALE.PRICE.<-as.numeric(gsub(",","",my_data$X.SALE.PRICE.,fixed=TRUE))
  
 #Fixing invalid entries
 my_data$SALE.PRICE.[my_data$SALE.PRICE.<2992]<-2992  #10% of 2nd quarternary
@@ -31,8 +29,10 @@ my_data$YEAR.BUILT.[my_data$YEAR.BUILT.== 0]<-as.integer(mean(my_data$YEAR.BUILT
 
 #Adding month column
 my_data$MONTH<-format(as.Date(my_data$SALE.DATE.),"%m")
-my_data$MONTH<-as.factor(my_data$MONTH)
+my_data$MONTH<-as.numeric(as.character(my_data$MONTH))
 
+library(lubridate)
+my_data$MONTH<-month(as.POSIXlt(my_data$SALE.DATE., format="%m-%d-%Y"))
 
 
 #ZIP or NEIGHBOURHOOD??
@@ -50,4 +50,4 @@ mean(my_data$SALE.PRICE.[my_data$TAX.CLASS.AT.TIME.OF.SALE. == 4])
 length(my_data$YEAR.BUILT.[my_data$YEAR.BUILT.<=1900])
 
 
-write.csv(my_data, "2017.csv")
+write.csv(my_data, "2013.csv")
