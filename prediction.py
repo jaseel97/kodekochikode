@@ -1,15 +1,14 @@
 import keras
 import numpy as np
+import pandas as pd
 import plotly
 import plotly.graph_objs as go
 import plotly.plotly as py
+import tensorflow as tf
 from keras.layers import LSTM, Dense
 from keras.models import Sequential
 from keras.preprocessing.sequence import TimeseriesGenerator
 from plotly.offline import plot
-
-import pandas as pd
-import tensorflow as tf
 from sklearn.preprocessing import MinMaxScaler
 
 filename = 'AggregatedData/Data_Combined.csv'
