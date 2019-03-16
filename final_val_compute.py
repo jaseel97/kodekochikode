@@ -17,9 +17,9 @@ print(df2['Location'][:5])
 # df1.set_index('Location', inplace=True)
 # df2.set_index('Location', inplace=True)
 
-df1['Count'] = df2['Value']
-df1['Val_Product'] = df1['Value'] * df2['Value']
-df1 = df1.sort_values('Val_Product', ascending=False)
+df1['Count'] = df2['Value'] 
+df1['Volume'] = df1['Value'] * df2['Value']
+df1 = df1.sort_values('Volume', ascending=False)
 
 print("\n\nVolume (Mean*Count) of Sales")
 print("------------------")
