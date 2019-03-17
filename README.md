@@ -14,11 +14,11 @@ The steps we have to carry out:
 - Create a ML model to predict values
 
 The R files: 
-- [Analysis](./uni_bi_variate_analysis.R) @jaseel97
-- [Cleaning](./Residential_Data_Clean.R)  @Joeavaikath
-- [Aggregation](./AggregationR.R)         @Joeavaikath
+- [Analysis](./uni_bi_variate_analysis.R) [@jaseel97](https://github.com/jaseel97)
+- [Cleaning](./Residential_Data_Clean.R)  [@Joeavaikath](https://github.com/Joeavaikath)
+- [Aggregation](./AggregationR.R)         [@Joeavaikath](https://github.com/Joeavaikath)
 
-The python files for the Neural Network(NN): \(all @George V Jose\)
+The python files for the Neural Network(NN): \(all [@George V Jose](https://github.com/GeorgeVJose)\)
 - [Prediction NN](./forecast_model.py)
 - [Final score computation](./final_val_compute.py)
 
